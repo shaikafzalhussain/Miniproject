@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         DOCKERHUB_CREDENTIALS = credentials('dockerhub-creds')
-        SONARQUBE_ENV = credentials('sonarqube-token')
+        SONARQUBE_ENV = credentials('sonar-token')
         IMAGE_NAME = "shaikafzalhussain/miniproject"
         CONTAINER_NAME = "miniproject"
         APP_PORT = "5000"
