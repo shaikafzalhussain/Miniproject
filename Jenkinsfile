@@ -29,8 +29,19 @@ pipeline {
                 echo "🧰 Installing Node.js for SonarQube analysis..."
                 sh '''
                 whoami
-                apt-get update -y || yum update -y
-                apt-get install -y nodejs npm || yum install -y nodejs npm
+                if command -v yum >/dev/null 2>&1; then
+                    echo "Amazon Linux detected"
+                    sudo yum install -y nodejs npm
+                elif command -v apt-get >/dev/null 2>&1; then
+                    echo "Ubuntu detected"
+                    sudo apt-get update -y
+                    sudo apt-get install -y nodejs npm
+                else
+                    echo "❌ Unsupported OS"
+                    exit 1
+                fi
+                node -v
+                npm -v
                 '''
             }
         }
