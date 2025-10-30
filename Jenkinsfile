@@ -2,109 +2,91 @@ pipeline {
     agent any
 
     environment {
-        DOCKERHUB_CREDENTIALS = credentials('dockerhub-creds')
-        SONARQUBE_ENV = credentials('sonar-token')
-        IMAGE_NAME = "shaikafzalhussain/miniproject"
+        // 🔐 Jenkins credentials (configure in Jenkins > Manage Credentials)
+        DOCKERHUB_CREDENTIALS = credentials('dockerhub-creds')  // Docker Hub username & password
+        SONARQUBE = credentials('sonar-token')                  // SonarQube token
+        DOCKER_IMAGE = "shaikafzalhussain/miniproject"
         CONTAINER_NAME = "miniproject"
-        APP_PORT = "5000"
+        SONARQUBE_SERVER = "http://<YOUR-SONARQUBE-IP>:9000"    // replace with your SonarQube server
     }
 
     stages {
-        stage('Checkout') {
+        stage('Checkout Code') {
             steps {
                 echo "📦 Checking out code from GitHub..."
                 git branch: 'main', url: 'https://github.com/shaikafzalhussain/Miniproject.git'
             }
         }
 
-        stage('Install Dependencies') {
-            steps {
-                echo "📦 Installing Python dependencies..."
-                sh 'pip3 install -r app/requirements.txt'
-            }
-        }
-
-        stage('Install NodeJS for SonarQube') {
-            steps {
-                echo "🧰 Installing Node.js for SonarQube analysis..."
-                sh '''
-                whoami
-                if command -v yum >/dev/null 2>&1; then
-                    echo "Amazon Linux detected"
-                    sudo yum install -y nodejs npm
-                elif command -v apt-get >/dev/null 2>&1; then
-                    echo "Ubuntu detected"
-                    sudo apt-get update -y
-                    sudo apt-get install -y nodejs npm
-                else
-                    echo "❌ Unsupported OS"
-                    exit 1
-                fi
-                node -v
-                npm -v
-                '''
-            }
-        }
-
         stage('SonarQube Analysis') {
             steps {
-                echo "🔍 Running SonarQube analysis..."
-                withSonarQubeEnv('MySonarQubeServer') {
-                    sh '''
-                        cd app
-                        sonar-scanner \
-                          -Dsonar.projectKey=MiniProject \
-                          -Dsonar.sources=. \
-                          -Dsonar.host.url=http://13.233.85.145:9000 \
-                          -Dsonar.login=$SONARQUBE_ENV
-                    '''
-                }
+                echo "🧠 Running SonarQube analysis..."
+                sh '''
+                sonar-scanner \
+                    -Dsonar.projectKey=miniproject \
+                    -Dsonar.sources=. \
+                    -Dsonar.host.url=$SONARQUBE_SERVER \
+                    -Dsonar.login=$SONARQUBE
+                '''
             }
         }
 
         stage('Build Docker Image') {
             steps {
                 echo "🐳 Building Docker image..."
-                sh 'docker build -t $IMAGE_NAME:latest .'
+                sh 'docker build -t $DOCKER_IMAGE:latest .'
             }
         }
 
-        stage('Push to DockerHub') {
+        stage('Push to Docker Hub') {
             steps {
-                echo "📤 Pushing Docker image to DockerHub..."
-                withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                    sh '''
-                        echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
-                        docker push $IMAGE_NAME:latest
-                    '''
-                }
-            }
-        }
-
-        stage('Deploy Container') {
-            steps {
-                echo "🚀 Deploying Docker container..."
+                echo "🚀 Pushing Docker image to DockerHub..."
                 sh '''
-                    echo "Stopping and removing old container if it exists..."
-                    docker stop $CONTAINER_NAME || true
-                    docker rm $CONTAINER_NAME || true
-
-                    echo "Pulling latest image from DockerHub..."
-                    docker pull $IMAGE_NAME:latest
-
-                    echo "Running new container..."
-                    docker run -d -p $APP_PORT:5000 --name $CONTAINER_NAME $IMAGE_NAME:latest
+                echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin
+                docker push $DOCKER_IMAGE:latest
                 '''
+            }
+        }
+
+        stage('Run Container Automatically') {
+            steps {
+                echo "🧩 Deploying new container..."
+                sh '''
+                # Stop and remove old container if exists
+                docker ps -q --filter "name=$CONTAINER_NAME" | grep -q . && docker stop $CONTAINER_NAME && docker rm $CONTAINER_NAME || true
+
+                # Run new container
+                docker run -d -p 5000:5000 --name $CONTAINER_NAME $DOCKER_IMAGE:latest
+                '''
+            }
+        }
+
+        stage('Health Check') {
+            steps {
+                echo "🩺 Checking app health..."
+                script {
+                    sleep 10
+                    def result = sh(script: "curl -s -o /dev/null -w '%{http_code}' http://localhost:5000", returnStdout: true).trim()
+                    if (result != '200') {
+                        error "❌ Health check failed! App not responding on port 5000."
+                    } else {
+                        echo "✅ Application is healthy and running!"
+                    }
+                }
             }
         }
     }
 
     post {
         success {
-            echo "✅ Pipeline completed successfully! Application running at http://<YOUR-EC2-IP>:$APP_PORT"
+            echo "🎉 Pipeline completed successfully! Your Flask app is live inside the container."
         }
         failure {
-            echo "❌ Pipeline failed! Check logs above for details."
+            echo "❌ Pipeline failed! Check logs above for the issue."
+        }
+        always {
+            echo "🧹 Cleaning up unused Docker resources..."
+            sh 'docker system prune -f || true'
         }
     }
 }
