@@ -5,7 +5,7 @@ pipeline {
         DOCKERHUB_CREDENTIALS = credentials('dockerhub-creds')
         SONAR_TOKEN = credentials('sonar-token')
         SONAR_URL = 'http://13.233.85.145:9000/'
-        IMAGE_NAME = ‘shaikafzalhussain/miniproject'
+        IMAGE_NAME = 'shaikafzalhussain/miniproject'
     }
 
     stages {
