@@ -7,7 +7,7 @@ pipeline {
         SONARQUBE = credentials('sonar-token')                  // SonarQube token
         DOCKER_IMAGE = "shaikafzalhussain/miniproject"
         CONTAINER_NAME = "miniproject"
-        SONARQUBE_SERVER = "http://<YOUR-SONARQUBE-IP>:9000"    // replace with your SonarQube server
+        SONARQUBE_SERVER = "http://13.233.85.145:9000/"    // replace with your SonarQube server
     }
 
     stages {
