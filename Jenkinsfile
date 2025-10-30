@@ -61,7 +61,8 @@ pipeline {
 
                     # Run a new container on port 5000
                     echo "🚀 Starting new container..."
-                    docker run -d -p 5000:5000 --name miniproject-v1.2 shaikafzalhussain/miniproject:latest
+                    docker run -d -p 5001:5000 --name miniproject-v1.2 shaikafzalhussain/miniproject:latest
+
                     '''
             }
         }
