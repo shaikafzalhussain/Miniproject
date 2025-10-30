@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+  <h2>API</h2>
+  <ul>
+    <li>GET /api/notes — list notes</li>
+    <li>POST /api/notes — create note (JSON: {"title":"...", "content":"..."})</li>
+    <li>GET /api/notes/&lt;id&gt; — get single note</li>
+    <li>DELETE /api/notes/&lt;id&gt; — delete note</li>
+    <li>GET /api/quiz/&lt;count&gt; — get a small quiz (json)</li>
+  </ul>
+{% endblock %}
+

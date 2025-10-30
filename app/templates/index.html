@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+  <section>
+    <h2>Notes ({{ count }})</h2>
+    {% if search %}
+      <p>Search results for "{{ search }}"</p>
+    {% endif %}
+    <ul class="notes">
+      {% for n in notes %}
+        <li>
+          <a href="{{ url_for('view_note', note_id=n.id) }}"><strong>{{ n.title }}</strong></a>
+          <div class="meta">Created: {{ n.created_at }}</div>
+          <p>{{ n.content[:200] }}{% if n.content|length > 200 %}...{% endif %}</p>
+        </li>
+      {% else %}
+        <li>No notes yet — create one!</li>
+      {% endfor %}
+    </ul>
+  </section>
+{% endblock %}
+

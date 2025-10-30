@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block content %}
+  {% if note %}
+    <article>
+      <h2>{{ note.title }}</h2>
+      <div class="meta">Created: {{ note.created_at }}</div>
+      <div class="content">{{ note.content | safe }}</div>
+
+      <h3>Flashcards</h3>
+      {% if flashcards %}
+        <ul class="flashcards">
+          {% for f in flashcards %}
+            <li>
+              <div class="q">{{ f.q }}</div>
+              <details><summary>Show answer</summary><div class="a">{{ f.a }}</div></details>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p>No flashcards could be generated from this note.</p>
+      {% endif %}
+
+      <form action="{{ url_for('delete_note', note_id=note.id) }}" method="post" onsubmit="return confirm('Delete note?')">
+        <a class="btn" href="{{ url_for('edit_note', note_id=note.id) }}">Edit</a>
+        <button class="btn danger" type="submit">Delete</button>
+      </form>
+    </article>
+  {% else %}
+    <article>
+      <h2>Create a new note</h2>
+      <form method="post">
+        <label>Title: <input name="title"></label>
+        <label>Content: <textarea name="content" rows="10"></textarea></label>
+        <button type="submit">Create</button>
+      </form>
+    </article>
+  {% endif %}
+{% endblock %}
+

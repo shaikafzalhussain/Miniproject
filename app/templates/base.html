@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>{{ app_name or 'StudyBuddy' }}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+  <header>
+    <h1><a href="{{ url_for('index') }}">{{ app_name or 'StudyBuddy' }}</a></h1>
+    <nav>
+      <a href="{{ url_for('create_note') }}">Create note</a> |
+      <a href="{{ url_for('api_docs') }}">API</a> |
+      <a href="{{ url_for('health') }}">Health</a>
+    </nav>
+    <form action="{{ url_for('search') }}" method="get" class="search">
+      <input type="search" name="q" placeholder="Search notes..." value="{{ search|default('') }}">
+      <button type="submit">Search</button>
+    </form>
+  </header>
+
+  <main>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="messages">
+          {% for category, msg in messages %}
+            <div class="msg {{ category }}">{{ msg }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer>
+    <p>Made with ❤️ — StudyBuddy</p>
+  </footer>
+</body>
+</html>
+

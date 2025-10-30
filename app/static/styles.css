@@ -1,0 +1,18 @@
+body { font-family: Inter, Arial, sans-serif; margin: 0; padding: 0; background:#f7f8fb; color:#222; }
+header { background:#0b5cff; color:white; padding:18px; display:flex; align-items:center; justify-content:space-between; }
+header h1 a { color: white; text-decoration:none; }
+nav a { color:rgba(255,255,255,0.9); margin-right:10px; }
+.search input { padding:6px 8px; border-radius:6px; border:none; }
+main { padding: 20px; max-width:1000px; margin:0 auto; }
+.notes { list-style:none; padding:0; }
+.notes li { background:white; padding:16px; margin-bottom:12px; border-radius:8px; box-shadow: 0 2px 6px rgba(0,0,0,0.06); }
+.meta { font-size:12px; color:#666; margin-bottom:8px; }
+.flashcards { list-style:none; padding:0; }
+.flashcards li { margin-bottom:8px; }
+.btn { display:inline-block; padding:8px 12px; background:#0b5cff; color:white; border-radius:6px; text-decoration:none; margin-right:8px; }
+.danger { background:#ff4d4f; }
+.messages .msg { padding:8px 12px; border-radius:6px; margin-bottom:8px;}
+.msg.info { background:#e6f7ff; color:#0050b3; }
+.msg.success { background:#f6ffed; color:#237804; }
+.msg.danger { background:#fff1f0; color:#a8071a; }
+
