@@ -144,15 +144,17 @@ CMD ["gunicorn", "-b", "0.0.0.0:5000", "app:app", "--workers", "2"]
 ✅ Code analysis with SonarQube
 ✅ Containerization & deployment automation
 ✅ Real-time DevOps workflow on AWS
+```
 
-📎 Repository
-👉 GitHub: shaikafzalhussain/Miniproject
-✨ “It’s just a beginning, still there is more.”
-<img width="1435" height="776" alt="webpage" src="https://github.com/user-attachments/assets/fad7ed79-78f5-451f-989a-444d358b53f4" />
-<img width="1427" height="777" alt="sonarqube1" src="https://github.com/user-attachments/assets/a0c06020-de56-4d09-a60c-b5a487d2a3df" />
-<img width="1436" height="765" alt="dockerhub" src="https://github.com/user-attachments/assets/e5c1809c-2563-4203-a659-828ad5e3ab61" />
+## 📎 Repository
 
+👉 **GitHub:** [shaikafzalhussain/Miniproject](https://github.com/shaikafzalhussain/Miniproject)  
+✨ *“It’s just a beginning, still there is more.”*
 
+![webpage](https://github.com/user-attachments/assets/fad7ed79-78f5-451f-989a-444d358b53f4)
+![sonarqube1](https://github.com/user-attachments/assets/a0c06020-de56-4d09-a60c-b5a487d2a3df)
+![dockerhub](https://github.com/user-attachments/assets/e5c1809c-2563-4203-a659-828ad5e3ab61)
+```
 🏷️ Tags
 #DevOps #Terraform #Jenkins #SonarQube #Docker #AWS #CICD #Flask #Python #Automation #Bash #CloudComputing
-
+```
