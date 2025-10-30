@@ -23,7 +23,7 @@ pipeline {
                 echo "🧠 Running SonarQube analysis..."
                 sh '''
                 sonar-scanner \
-                    -Dsonar.projectKey=miniproject \
+                    -Dsonar.projectKey=Miniproject \
                     -Dsonar.sources=. \
                     -Dsonar.host.url=$SONARQUBE_SERVER \
                     -Dsonar.login=$SONARQUBE
