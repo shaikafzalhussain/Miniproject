@@ -50,14 +50,19 @@ pipeline {
 
         stage('Run Container Automatically') {
             steps {
-                echo "🧩 Deploying new container..."
+                echo '🧩 Deploying new container...'
                 sh '''
-                # Stop and remove old container if exists
-                docker ps -q --filter "name=$CONTAINER_NAME" | grep -q . && docker stop $CONTAINER_NAME && docker rm $CONTAINER_NAME || true
+                    # Stop and remove old container if it exists
+                    if [ "$(docker ps -aq -f name=miniproject-v1.2)" ]; then
+                        echo "🛑 Stopping and removing old container..."
+                        docker stop miniproject-v1.2 || true
+                        docker rm miniproject-v1.2 || true
+                    fi
 
-                # Run new container
-                docker run -d -p 5000:5000 --name $CONTAINER_NAME $DOCKER_IMAGE:latest
-                '''
+                    # Run a new container on port 5000
+                    echo "🚀 Starting new container..."
+                    docker run -d -p 5000:5000 --name miniproject-v1.2 shaikafzalhussain/miniproject:latest
+                    '''
             }
         }
 
