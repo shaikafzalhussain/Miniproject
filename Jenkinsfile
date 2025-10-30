@@ -2,13 +2,14 @@ pipeline {
     agent any
 
     environment {
-        DOCKERHUB_CREDENTIALS = credentials('dockerhub-creds')   // Jenkins credentials ID for DockerHub
-        SONARQUBE_ENV = credentials('sonar-token')                // SonarQube token (optional)
+        DOCKERHUB_CREDENTIALS = credentials('dockerhub-creds')
+        SONARQUBE_ENV = credentials('sonarqube-token')
         IMAGE_NAME = "shaikafzalhussain/miniproject"
+        CONTAINER_NAME = "miniproject"
+        APP_PORT = "5000"
     }
 
     stages {
-
         stage('Checkout') {
             steps {
                 echo "📦 Checking out code from GitHub..."
@@ -20,6 +21,17 @@ pipeline {
             steps {
                 echo "📦 Installing Python dependencies..."
                 sh 'pip3 install -r app/requirements.txt'
+            }
+        }
+
+        stage('Install NodeJS for SonarQube') {
+            steps {
+                echo "🧰 Installing Node.js for SonarQube analysis..."
+                sh '''
+                    sudo apt-get update -y
+                    sudo apt-get install -y nodejs npm
+                    node -v
+                '''
             }
         }
 
@@ -42,20 +54,19 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 echo "🐳 Building Docker image..."
-                sh '''
-                    docker build -t $IMAGE_NAME:latest .
-                '''
+                sh 'docker build -t $IMAGE_NAME:latest .'
             }
         }
 
         stage('Push to DockerHub') {
             steps {
                 echo "📤 Pushing Docker image to DockerHub..."
-                sh '''
-                    echo "$DOCKERHUB_CREDENTIALS_PSW" | docker login -u "$DOCKERHUB_CREDENTIALS_USR" --password-stdin
-                    docker push $IMAGE_NAME:latest
-                    docker logout
-                '''
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    sh '''
+                        echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
+                        docker push $IMAGE_NAME:latest
+                    '''
+                }
             }
         }
 
@@ -63,26 +74,26 @@ pipeline {
             steps {
                 echo "🚀 Deploying Docker container..."
                 sh '''
-                    CONTAINER_NAME=miniproject
-
-                    # Stop & remove existing container if running
+                    echo "Stopping and removing old container if it exists..."
                     docker stop $CONTAINER_NAME || true
                     docker rm $CONTAINER_NAME || true
 
-                    # Run new container
-                    docker run -d -p 5000:5000 --restart always --name $CONTAINER_NAME $IMAGE_NAME:latest
+                    echo "Pulling latest image from DockerHub..."
+                    docker pull $IMAGE_NAME:latest
+
+                    echo "Running new container..."
+                    docker run -d -p $APP_PORT:5000 --name $CONTAINER_NAME $IMAGE_NAME:latest
                 '''
             }
         }
-
     }
 
     post {
         success {
-            echo "✅ Deployment successful! Access the app at: http://<EC2-PUBLIC-IP>:5000"
+            echo "✅ Pipeline completed successfully! Application running at http://<YOUR-EC2-IP>:$APP_PORT"
         }
         failure {
-            echo "❌ Pipeline failed. Check console output for details."
+            echo "❌ Pipeline failed! Check logs above for details."
         }
     }
 }
