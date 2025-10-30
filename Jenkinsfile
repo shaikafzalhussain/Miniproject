@@ -6,7 +6,7 @@ pipeline {
         DOCKERHUB_CREDENTIALS = credentials('dockerhub-creds')  // Docker Hub username & password
         SONARQUBE = credentials('sonar-token')                  // SonarQube token
         DOCKER_IMAGE = "shaikafzalhussain/miniproject"
-        CONTAINER_NAME = "miniproject"
+        CONTAINER_NAME = "Miniproject"
         SONARQUBE_SERVER = "http://13.233.85.145:9000/"    // replace with your SonarQube server
     }
 
