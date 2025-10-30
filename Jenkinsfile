@@ -28,9 +28,9 @@ pipeline {
             steps {
                 echo "🧰 Installing Node.js for SonarQube analysis..."
                 sh '''
-                    sudo apt-get update -y
-                    sudo apt-get install -y nodejs npm
-                    node -v
+                whoami
+                apt-get update -y || yum update -y
+                apt-get install -y nodejs npm || yum install -y nodejs npm
                 '''
             }
         }
